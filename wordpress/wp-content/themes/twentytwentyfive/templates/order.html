@@ -1,0 +1,164 @@
+<!-- wp:template-part {"slug":"header"} /-->
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+
+<style>
+  .custom-order-section {
+    padding: 80px 0;
+    font-family: var(
+      --wp--preset--font-family--system-font,
+      system-ui,
+      sans-serif
+    );
+  }
+  .custom-order-card {
+    border: 1px solid var(--wp--preset--color--accent-2, #e2e2e2);
+    border-radius: 48px;
+    background-color: var(--wp--preset--color--base, #fff);
+  }
+  .custom-btn {
+    background-color: var(--wp--preset--color--contrast, #111);
+    border-color: var(--wp--preset--color--contrast, #111);
+    border-radius: 40px;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+  }
+  .custom-btn:hover,
+  .custom-btn:focus {
+    background-color: #333;
+    border-color: #333;
+  }
+  .custom-input {
+    border-radius: 16px;
+  }
+  .custom-input:focus {
+    border-color: var(--wp--preset--color--contrast, #111);
+    box-shadow: 0 0 0 0.25rem rgba(17, 17, 17, 0.1);
+  }
+</style>
+
+<main class="custom-order-section bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h1 class="card-title text-center mb-4 fw-bold">Order-our-Sound.</h1>
+        <div class="card shadow-sm custom-order-card">
+          <div class="card-body p-4 p-md-5">
+            <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+            <form id="orderForm">
+              <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                <input
+                  type="text"
+                  class="form-control custom-input"
+                  name="nama_pemesan"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">WhatsApp Number</label>
+                <input
+                  type="text"
+                  class="form-control custom-input"
+                  name="nomor_wa"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control custom-input"
+                  name="email"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Product Name</label>
+                <input
+                  type="text"
+                  class="form-control custom-input"
+                  name="nama_produk"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <input
+                  type="number"
+                  class="form-control custom-input"
+                  name="jumlah"
+                  min="1"
+                  value="1"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary w-100 custom-btn mt-3"
+                id="btnSubmit"
+              >
+                Order Now
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+  document.getElementById("orderForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    let btnSubmit = document.getElementById("btnSubmit");
+    let alertDiv = document.getElementById("alertMessage");
+
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = "Processing...";
+
+    let formData = {
+      nama_pemesan: document.querySelector('input[name="nama_pemesan"]').value,
+      nomor_wa: document.querySelector('input[name="nomor_wa"]').value,
+      email: document.querySelector('input[name="email"]').value,
+      nama_produk: document.querySelector('input[name="nama_produk"]').value,
+      jumlah: document.querySelector('input[name="jumlah"]').value,
+    };
+
+    fetch("http://localhost:8000/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Error Server or Validation");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        alertDiv.classList.remove("d-none", "alert-danger");
+        alertDiv.classList.add("alert-success");
+        alertDiv.innerHTML = "Order submitted successfully!";
+        document.getElementById("orderForm").reset();
+      })
+      .catch((error) => {
+        alertDiv.classList.remove("d-none", "alert-success");
+        alertDiv.classList.add("alert-danger");
+        alertDiv.innerHTML = "Failed: " + error.message;
+      })
+      .finally(() => {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = "Order Now";
+      });
+  });
+</script>
+
+<!-- wp:template-part {"slug":"footer"} /-->
