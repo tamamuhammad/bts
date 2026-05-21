@@ -3,9 +3,7 @@
 Proyek ini adalah implementasi sistem pemesanan produk berbasis *headless*, memisahkan *backend* (Laravel) sebagai penyedia API dan pengelola data, dengan *frontend* (WordPress) sebagai *landing page*.
 
 ## Fitur Utama & Poin Ekstra
-- Menggunakan UUID sebagai Primary Key pada tabel *orders*.
-- *Frontend* menggunakan Custom Page Template WordPress murni.
-- Terintegrasi dengan Bootstrap 5.
+- *Order Form* menggunakan Custom Page Template.
 - Pengiriman form menggunakan AJAX (Fetch API) tanpa *reload* halaman, lengkap dengan *error handling* dari respons API.
 - Admin panel otomatis menggunakan Filament v5.
 
